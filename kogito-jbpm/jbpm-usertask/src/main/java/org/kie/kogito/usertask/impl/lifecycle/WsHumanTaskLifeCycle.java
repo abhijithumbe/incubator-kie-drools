@@ -244,7 +244,25 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
                 .findAny()
                 .orElseThrow(() -> new UserTaskTransitionException("Invalid transition " + transitionId + " from " + state));
 
-        return new DefaultUserTaskTransitionToken(transition.id(), transition.source(), transition.target(), data);
+        Map<String, Object> normalizedData = new java.util.LinkedHashMap<>();
+        data.forEach((k, v) -> {
+            if (PARAMETER_USER.equalsIgnoreCase(k)) {
+                normalizedData.put(PARAMETER_USER, v);
+            } else if (PARAMETER_NOTIFY.equalsIgnoreCase(k)) {
+                normalizedData.put(PARAMETER_NOTIFY, v);
+            } else if (PARAMETER_DELEGATED_USER.equalsIgnoreCase(k)) {
+                normalizedData.put(PARAMETER_DELEGATED_USER, v);
+            } else if (PARAMETER_FORWARDED_USERS.equalsIgnoreCase(k)) {
+                normalizedData.put(PARAMETER_FORWARDED_USERS, v);
+            } else if (PARAMETER_NOMINATED_USERS.equalsIgnoreCase(k)) {
+                normalizedData.put(PARAMETER_NOMINATED_USERS, v);
+            } else if (PARAMETER_SUSPEND_UNTIL.equalsIgnoreCase(k)) {
+                normalizedData.put(PARAMETER_SUSPEND_UNTIL, v);
+            } else {
+                normalizedData.put(k, v);
+            }
+        });
+        return new DefaultUserTaskTransitionToken(transition.id(), transition.source(), transition.target(), normalizedData);
     }
 
     public Optional<UserTaskTransitionToken> activate(UserTaskInstance userTaskInstance, UserTaskTransitionToken token, IdentityProvider identityProvider) {
