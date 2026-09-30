@@ -23,6 +23,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -244,7 +245,7 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
                 .findAny()
                 .orElseThrow(() -> new UserTaskTransitionException("Invalid transition " + transitionId + " from " + state));
 
-        Map<String, Object> normalizedData = new java.util.LinkedHashMap<>();
+        Map<String, Object> normalizedData = new HashMap<>();
         data.forEach((k, v) -> {
             if (PARAMETER_USER.equalsIgnoreCase(k)) {
                 normalizedData.put(PARAMETER_USER, v);
