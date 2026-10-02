@@ -362,6 +362,40 @@ public class RuleFlowProcessValidatorTest {
                         "Invalid SLA due date '2026-09-18T18:00:00Z' configured for process 'test'"));
     }
 
+    @Test
+    public void testValidIsoProcessSlaDueDate() {
+        RuleFlowProcess process = new RuleFlowProcess();
+        process.setId("test");
+        process.setName("test");
+        process.setMetaData(
+                CUSTOM_SLA_DUE_DATE,
+                "PT10S");
+
+        ProcessValidationError[] errors =
+                RuleFlowProcessValidator.getInstance().validateProcess(process);
+
+        assertThat(errors)
+                .extracting(ProcessValidationError::getMessage)
+                .noneMatch(message -> message.contains("Invalid SLA due date"));
+    }
+
+    @Test
+    public void testValidProcessSlaDueDate() {
+        RuleFlowProcess process = new RuleFlowProcess();
+        process.setId("test");
+        process.setName("test");
+        process.setMetaData(
+                CUSTOM_SLA_DUE_DATE,
+                "10s");
+
+        ProcessValidationError[] errors =
+                RuleFlowProcessValidator.getInstance().validateProcess(process);
+
+        assertThat(errors)
+                .extracting(ProcessValidationError::getMessage)
+                .noneMatch(message -> message.contains("Invalid SLA due date"));
+    }
+
     private void assertInvalidSlaDueDate(RuleFlowProcess process,
             String nodeName) {
 
