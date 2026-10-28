@@ -57,6 +57,7 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.expr.ConditionalExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.NullLiteralExpr;
@@ -357,7 +358,12 @@ public class ProcessResourceGenerator {
                                         .orElseThrow(() -> new RuntimeException("signalInstanceDeclaration doesn't have body"));
 
                                 if (signalType == null) {
-                                    signalInstanceBody.findAll(NameExpr.class, nameExpr -> "data".equals(nameExpr.getNameAsString())).forEach(name -> name.replace(new NullLiteralExpr()));
+                                    signalInstanceBody.findAll(
+                                            ConditionalExpr.class,
+                                            expr -> expr.getThenExpr().isMethodCallExpr()
+                                                    && expr.getThenExpr().asMethodCallExpr()
+                                                            .getNameAsString().equals("toJavaValue"))
+                                            .forEach(expr -> expr.replace(new NullLiteralExpr()));
                                 }
 
                                 template.addMethod(SIGNAL_METHOD_PREFFIX + index.getAndIncrement(), Keyword.PUBLIC)
